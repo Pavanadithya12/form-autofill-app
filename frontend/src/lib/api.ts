@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { ExtractionResponse } from '../types/extraction';
 
+const RENDER_BACKEND = 'https://form-autofill-app-4qdn.onrender.com';
 const API_BASE = process.env.NEXT_PUBLIC_API_URL 
   ? `${process.env.NEXT_PUBLIC_API_URL}/api`
-  : '/api';
+  : `${RENDER_BACKEND}/api`;
 
 export async function uploadDocument(file: File): Promise<ExtractionResponse> {
   const formData = new FormData();
