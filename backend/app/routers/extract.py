@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime
-from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTask
+from fastapi import APIRouter, UploadFile, File, HTTPException, BackgroundTasks
 from app.models.schemas import ExtractionResponse, DocumentType
 from app.services.ocr_service import extract_text_from_image
 from app.services.pdf_service import extract_text_from_pdf
