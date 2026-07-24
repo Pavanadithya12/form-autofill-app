@@ -1,0 +1,33 @@
+{
+  "name": "intelligent-form-autofiller-frontend",
+  "version": "2.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "build:cf": "NEXT_EXPORT=true next build",
+    "build:vercel": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy:cf": "NEXT_EXPORT=true next build && npx wrangler pages deploy out --project-name=form-autofill-app",
+    "deploy:vercel": "npx vercel --prod"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.6",
+    "@mui/material": "^5.15.6",
+    "axios": "^1.6.7",
+    "framer-motion": "^11.0.3",
+    "lucide-react": "^0.316.0",
+    "next": "^15.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.10",
+    "@types/react": "^18.2.48",
+    "@types/react-dom": "^18.2.18",
+    "typescript": "^5.3.3"
+  }
+}

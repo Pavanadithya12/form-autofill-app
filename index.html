@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form AutoFill – Intelligent Document Parser & Auto-Filler</title>
+  <meta name="description" content="Form AutoFill extracts candidate information from PDF, DOCX, and Image files to populate application forms automatically with 100% data privacy." />
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Mammoth.js for DOCX -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
+  <!-- Tesseract.js for OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background Animated Particles / Glows -->
+  <div class="bg-glow glow-1"></div>
+  <div class="bg-glow glow-2"></div>
+
+  <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+  <header id="app-header">
+    <div class="header-container">
+      <div class="brand">
+        <div class="brand-icon">⚡</div>
+        <div class="brand-details">
+          <span class="brand-title">Form <span class="emerald-text">AutoFill</span></span>
+          <span class="brand-subtitle">Smart Document Parser</span>
+        </div>
+      </div>
+
+      <nav class="workflow-steps" aria-label="Process steps">
+        <div class="nav-step active" id="step-1">
+          <span class="step-num">1</span>
+          <span class="step-name">Upload</span>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-step" id="step-2">
+          <span class="step-num">2</span>
+          <span class="step-name">Extract</span>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-step" id="step-3">
+          <span class="step-num">3</span>
+          <span class="step-name">Review</span>
+        </div>
+        <div class="nav-divider"></div>
+        <div class="nav-step" id="step-4">
+          <span class="step-num">4</span>
+          <span class="step-name">Submit</span>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- ═══════════════════════ SECTION 1: UPLOAD ═══════════════════════ -->
+    <section id="sec-upload" class="view-section active">
+      <div class="hero-header">
+        <span class="hero-badge">✨ AI-POWERED DOCUMENT AUTOFILL</span>
+        <h1 class="hero-heading">Intelligent Application Auto-Filler</h1>
+        <p class="hero-subtext">
+          Upload your resume or candidate document (**PDF**, **DOCX**, or **Image**).<br/>
+          Form AutoFill extracts relevant data and populates your application form instantly.
+        </p>
+      </div>
+
+      <!-- Upload Dropzone -->
+      <div class="dropzone-card" id="dropzone-card" role="button" tabindex="0" aria-label="Upload document area">
+        <input type="file" id="doc-file-input" accept=".pdf,.docx,.doc,.png,.jpg,.jpeg,.webp,.bmp,.tiff" hidden />
+        <div class="drop-icon-wrapper">
+          <div class="icon-circle">📂</div>
+        </div>
+        <h2 class="drop-title">Drag &amp; Drop Document Here</h2>
+        <p class="drop-sub">or <button type="button" class="btn-browse" id="btn-browse-trigger">browse computer</button></p>
+        
+        <div class="supported-formats">
+          <span class="format-pill pdf">PDF</span>
+          <span class="format-pill docx">DOCX / DOC</span>
+          <span class="format-pill img">PNG / JPG / WEBP</span>
+        </div>
+        <p class="privacy-note">🔒 100% Client-Side Privacy — Documents are processed entirely inside your browser.</p>
+      </div>
+
+      <!-- Selected File Preview -->
+      <div class="file-card" id="file-card" style="display:none">
+        <div class="file-details">
+          <span class="file-icon" id="file-icon-display">📄</span>
+          <div class="file-meta">
+            <div class="file-title" id="file-name-text">filename.pdf</div>
+            <div class="file-size-text" id="file-size-text">0 KB</div>
+          </div>
+          <button type="button" class="btn-remove-file" id="btn-remove-file" title="Remove file">✕</button>
+        </div>
+        <button type="button" class="btn-action-primary" id="btn-start-extract">
+          🚀 Extract &amp; Auto-Fill Form
+        </button>
+      </div>
+
+      <!-- Value Props -->
+      <div class="grid-features">
+        <div class="feature-box">
+          <div class="f-icon">🎯</div>
+          <h3>Strict Validation</h3>
+          <p>Ensures valid documents with candidate names before populating form fields.</p>
+        </div>
+        <div class="feature-box">
+          <div class="f-icon">⚡</div>
+          <h3>Fast Processing</h3>
+          <p>Parses structured &amp; unstructured layouts into clean form fields in seconds.</p>
+        </div>
+        <div class="feature-box">
+          <div class="f-icon">🔒</div>
+          <h3>Browser-Local</h3>
+          <p>Zero data transmitted to external servers. Safe for sensitive personal files.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ SECTION 2: PROCESSING ═══════════════════════ -->
+    <section id="sec-processing" class="view-section" style="display:none">
+      <div class="processing-card">
+        <div class="loader-spinner">
+          <div class="spinner-ring"></div>
+          <span class="spinner-icon" id="proc-icon">🔍</span>
+        </div>
+        <h2 id="proc-headline">Reading Document...</h2>
+        <p id="proc-subheadline" class="proc-sub">Extracting text and identifying entities</p>
+
+        <div class="meter-track">
+          <div class="meter-fill" id="meter-fill" style="width: 0%"></div>
+        </div>
+        <div class="meter-percent" id="meter-percent">0%</div>
+
+        <div class="process-checklist">
+          <div class="chk-item" id="chk-1">
+            <span class="chk-icon">📂</span> <span>File Loading</span> <span class="chk-status" id="chk-st-1">⏳</span>
+          </div>
+          <div class="chk-item" id="chk-2">
+            <span class="chk-icon">📝</span> <span>Text Extraction</span> <span class="chk-status" id="chk-st-2">⏳</span>
+          </div>
+          <div class="chk-item" id="chk-3">
+            <span class="chk-icon">🧠</span> <span>Field &amp; Entity Parsing</span> <span class="chk-status" id="chk-st-3">⏳</span>
+          </div>
+          <div class="chk-item" id="chk-4">
+            <span class="chk-icon">✅</span> <span>Form Auto-Population</span> <span class="chk-status" id="chk-st-4">⏳</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════ SECTION 3: APPLICATION FORM ═══════════════════════ -->
+    <section id="sec-form" class="view-section" style="display:none">
+
+      <div class="form-banner">
+        <div class="form-banner-text">
+          <h1>Candidate Application Form</h1>
+          <p>Review and edit your auto-populated details before submitting.</p>
+        </div>
+        <div class="form-banner-buttons">
+          <button type="button" class="btn-secondary" id="btn-reupload">↩ Upload New</button>
+          <button type="button" class="btn-secondary danger" id="btn-clear-form">🗑️ Clear Form</button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics Bar -->
+      <div class="metrics-bar">
+        <div class="m-box">
+          <span class="m-val" id="metric-filled">0</span>
+          <span class="m-lbl">Fields Auto-Filled</span>
+        </div>
+        <div class="m-divider"></div>
+        <div class="m-box">
+          <span class="m-val" id="metric-total">0</span>
+          <span class="m-lbl">Total Fields</span>
+        </div>
+        <div class="m-divider"></div>
+        <div class="m-box">
+          <span class="m-val" id="metric-accuracy">100%</span>
+          <span class="m-lbl">Parsing Quality</span>
+        </div>
+      </div>
+
+      <form id="autofill-app-form" novalidate autocomplete="off">
+
+        <!-- ── Personal Info ── -->
+        <div class="section-card">
+          <div class="card-head">
+            <span class="head-icon">👤</span>
+            <h2>Personal Information</h2>
+          </div>
+          <div class="input-grid">
+            <div class="field-item">
+              <label for="inp-fullname">Full Name <span class="req">*</span></label>
+              <input type="text" id="inp-fullname" name="fullName" placeholder="e.g. John Doe" required />
+            </div>
+            <div class="field-item">
+              <label for="inp-email">Email Address</label>
+              <input type="email" id="inp-email" name="email" placeholder="john@example.com" />
+            </div>
+            <div class="field-item">
+              <label for="inp-phone">Phone Number</label>
+              <input type="tel" id="inp-phone" name="phone" placeholder="+1 (555) 000-0000" />
+            </div>
+            <div class="field-item">
+              <label for="inp-dob">Date of Birth</label>
+              <input type="text" id="inp-dob" name="dob" placeholder="DD/MM/YYYY" />
+            </div>
+            <div class="field-item">
+              <label for="inp-gender">Gender</label>
+              <select id="inp-gender" name="gender">
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Non-binary">Non-binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="field-item">
+              <label for="inp-nationality">Nationality</label>
+              <input type="text" id="inp-nationality" name="nationality" placeholder="e.g. Indian, American" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Address Details ── -->
+        <div class="section-card">
+          <div class="card-head">
+            <span class="head-icon">📍</span>
+            <h2>Address &amp; Location</h2>
+          </div>
+          <div class="input-grid">
+            <div class="field-item full-width">
+              <label for="inp-street">Street Address</label>
+              <input type="text" id="inp-street" name="street" placeholder="123 Main Street, Suite 4B" />
+            </div>
+            <div class="field-item">
+              <label for="inp-city">City</label>
+              <input type="text" id="inp-city" name="city" placeholder="New York" />
+            </div>
+            <div class="field-item">
+              <label for="inp-state">State / Province</label>
+              <input type="text" id="inp-state" name="state" placeholder="NY" />
+            </div>
+            <div class="field-item">
+              <label for="inp-zip">ZIP / Postal Code</label>
+              <input type="text" id="inp-zip" name="zipcode" placeholder="10001" />
+            </div>
+            <div class="field-item">
+              <label for="inp-country">Country</label>
+              <input type="text" id="inp-country" name="country" placeholder="United States" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Online Links ── -->
+        <div class="section-card">
+          <div class="card-head">
+            <span class="head-icon">🌐</span>
+            <h2>Online Profiles &amp; Portfolios</h2>
+          </div>
+          <div class="input-grid">
+            <div class="field-item">
+              <label for="inp-linkedin">LinkedIn Profile</label>
+              <input type="url" id="inp-linkedin" name="linkedin" placeholder="https://linkedin.com/in/username" />
+            </div>
+            <div class="field-item">
+              <label for="inp-github">GitHub Profile</label>
+              <input type="url" id="inp-github" name="github" placeholder="https://github.com/username" />
+            </div>
+            <div class="field-item full-width">
+              <label for="inp-website">Portfolio Website</label>
+              <input type="url" id="inp-website" name="website" placeholder="https://yourwebsite.com" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Summary ── -->
+        <div class="section-card">
+          <div class="card-head">
+            <span class="head-icon">📝</span>
+            <h2>Professional Summary</h2>
+          </div>
+          <div class="input-grid">
+            <div class="field-item full-width">
+              <label for="inp-summary">Bio / Executive Summary</label>
+              <textarea id="inp-summary" name="summary" rows="4" placeholder="Brief career objective or professional summary..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Skills ── -->
+        <div class="section-card">
+          <div class="card-head">
+            <span class="head-icon">⚡</span>
+            <h2>Skills &amp; Competencies</h2>
+          </div>
+          <div class="input-grid">
+            <div class="field-item full-width">
+              <label for="skill-tag-input">Skills <span class="hint-text">(Press Enter or comma to add)</span></label>
+              <div class="skills-tag-container" id="skills-tag-container">
+                <input type="text" id="skill-tag-input" placeholder="e.g. Python, SQL, JavaScript..." autocomplete="off" />
+              </div>
+              <input type="hidden" id="skills-hidden-input" name="skills" />
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Education ── -->
+        <div class="section-card">
+          <div class="card-head flex-head">
+            <div class="head-title">
+              <span class="head-icon">🎓</span>
+              <h2>Education History</h2>
+            </div>
+            <button type="button" class="btn-add-item" id="btn-add-edu">+ Add Education</button>
+          </div>
+          <div id="edu-rows-wrapper"></div>
+          <div class="blank-state" id="edu-blank-state">
+            <p>No education entries parsed. Click <strong>+ Add Education</strong> to add manually.</p>
+          </div>
+        </div>
+
+        <!-- ── Experience ── -->
+        <div class="section-card">
+          <div class="card-head flex-head">
+            <div class="head-title">
+              <span class="head-icon">💼</span>
+              <h2>Work Experience</h2>
+            </div>
+            <button type="button" class="btn-add-item" id="btn-add-exp">+ Add Experience</button>
+          </div>
+          <div id="exp-rows-wrapper"></div>
+          <div class="blank-state" id="exp-blank-state">
+            <p>No work experience parsed. Click <strong>+ Add Experience</strong> to add manually.</p>
+          </div>
+        </div>
+
+        <!-- Submit Footer -->
+        <div class="form-submit-footer">
+          <p class="footer-notice">Ensure all details are accurate before submitting.</p>
+          <button type="submit" class="btn-submit-app" id="btn-submit-app">
+            <span>✨</span> Submit Application
+          </button>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- ═══════════════════════ SECTION 4: SUBMIT SUCCESS ═══════════════════════ -->
+    <section id="sec-success" class="view-section" style="display:none">
+      <div class="success-card">
+        <div class="success-badge-icon">✓</div>
+        <h1>Application Submitted Successfully!</h1>
+        <p class="success-sub">Here is your complete application payload formatted as JSON.</p>
+
+        <div class="json-code-box">
+          <div class="json-code-header">
+            <span>JSON Output</span>
+            <button type="button" class="btn-copy-code" id="btn-copy-code">📋 Copy JSON</button>
+          </div>
+          <pre class="json-code-body" id="json-code-body"></pre>
+        </div>
+
+        <div class="success-buttons">
+          <button type="button" class="btn-action-primary" id="btn-download-json">⬇️ Download JSON File</button>
+          <button type="button" class="btn-secondary" id="btn-start-fresh">↩ Upload Another Document</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════ ACCURATE ERROR MODAL POPUP ═══════════════════════ -->
+  <div class="modal-backdrop" id="modal-backdrop" style="display:none" role="dialog" aria-modal="true">
+    <div class="modal-dialog">
+      <div class="modal-icon-badge" id="modal-icon">❌</div>
+      <h2 class="modal-title" id="modal-title">Invalid Document</h2>
+      <div class="modal-content">
+        <p id="modal-message">The uploaded document is invalid or missing required details.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-modal-close" id="btn-modal-close">OK, Upload Valid File</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-wrapper" id="toast-wrapper"></div>
+
+  <script src="extractor.js"></script>
+  <script src="parser.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
