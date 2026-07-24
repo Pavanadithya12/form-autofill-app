@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     API_PREFIX: str = "/api"
     
     # MongoDB Atlas Connection
-    MONGODB_URI: str = os.getenv("MONGODB_URI", "mongodb+srv://localhost:27017/form_autofill")
+    MONGODB_URI: str = os.getenv("MONGODB_URI", "")
     DATABASE_NAME: str = os.getenv("DATABASE_NAME", "form_autofill_db")
     COLLECTION_NAME: str = os.getenv("COLLECTION_NAME", "extractions")
     
