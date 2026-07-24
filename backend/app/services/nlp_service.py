@@ -4,18 +4,10 @@ from app.models.schemas import DocumentType, ExtractedField, ExtractedData, Educ
 
 logger = logging.getLogger("uvicorn")
 
-_nlp = None
 
 def get_spacy_nlp():
-    global _nlp
-    if _nlp is None:
-        try:
-            import spacy
-            _nlp = spacy.load("en_core_web_sm")
-        except Exception:
-            logger.info("spaCy model 'en_core_web_sm' not found locally. Using regex heuristics engine.")
-            _nlp = False
-    return _nlp
+    """spaCy removed — using pure regex engine (faster, no model download needed)."""
+    return False
 
 def classify_document_type(text: str) -> DocumentType:
     text_lower = text.lower()
