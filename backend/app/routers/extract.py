@@ -12,7 +12,7 @@ router = APIRouter(prefix="/extract", tags=["Extraction"])
 
 @APIRouter().post("", response_model=ExtractionResponse)
 @router.post("", response_model=ExtractionResponse)
-async def extract_document(file: UploadFile = File(...)):
+async def extract_document(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
     if not file:
         raise HTTPException(status_code=400, detail="No file provided.")
     
@@ -70,7 +70,11 @@ async def extract_document(file: UploadFile = File(...)):
         "created_at": created_at
     }
 
-    # Save to MongoDB Atlas
-    await save_extraction_history(response_data)
+    # Save to MongoDB Atlas in background (non-blocking)
+    if background_tasks:
+        background_tasks.add_task(save_extraction_history, response_data)
+    else:
+        import asyncio
+        asyncio.create_task(save_extraction_history(response_data))
 
     return response_data
