@@ -10,7 +10,6 @@ from app.database import save_extraction_history
 
 router = APIRouter(prefix="/extract", tags=["Extraction"])
 
-@APIRouter().post("", response_model=ExtractionResponse)
 @router.post("", response_model=ExtractionResponse)
 async def extract_document(file: UploadFile = File(...), background_tasks: BackgroundTasks = None):
     if not file:
