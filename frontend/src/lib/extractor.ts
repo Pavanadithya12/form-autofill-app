@@ -240,6 +240,18 @@ export async function extractDocument(
   const summary = generateSummary(rawText, docType);
   const entities = parseEntities(rawText, baseConf);
 
+  const hasKeyField = Boolean(
+    entities.full_name.value ||
+    entities.email.value ||
+    entities.phone.value ||
+    entities.dob.value ||
+    entities.address.value
+  );
+
+  if (!hasKeyField) {
+    throw new Error('No valid form data (Name, Email, Phone, Address, DOB) could be identified in this document. Please upload a structured form, resume, invoice, or ID document.');
+  }
+
   return {
     id: crypto.randomUUID(),
     filename: file.name,
